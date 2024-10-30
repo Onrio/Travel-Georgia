@@ -1,0 +1,32 @@
+header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dedede;
+}
+
+.main-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 0;
+}
+
+.logo {
+  width: 200px;
+}
+.logo img {
+  width: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.main-nav ul {
+  display: flex;
+  gap: 16px;
+}
+.main-nav ul a {
+  color: black;
+}
+.main-nav ul .active_nav_item {
+  color: black;
+  text-decoration: underline;
+} /*# sourceMappingURL=style.module.css.map */

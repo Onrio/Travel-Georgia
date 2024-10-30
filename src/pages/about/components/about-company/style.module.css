@@ -1,0 +1,35 @@
+.company-row {
+  display: flex;
+  flex-direction: column;
+}
+.company-row .company-block {
+  display: flex;
+  gap: 16px;
+  padding: 32px 0;
+}
+.company-row .company-block:nth-child(odd) {
+  flex-direction: row-reverse !important;
+}
+
+.about-us-img {
+  display: flex;
+  flex: 1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.about-us-img img {
+  width: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.about-us-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+.about-us-text h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+} /*# sourceMappingURL=style.module.css.map */

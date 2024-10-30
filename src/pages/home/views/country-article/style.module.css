@@ -1,0 +1,23 @@
+.country-view-row {
+  display: flex;
+  gap: 16px;
+  padding: 32px 0;
+  min-height: calc(100vh - 152px);
+}
+
+.country-view-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.country-view-image {
+  display: flex;
+  flex: 1;
+}
+.country-view-image img {
+  width: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+} /*# sourceMappingURL=style.module.css.map */

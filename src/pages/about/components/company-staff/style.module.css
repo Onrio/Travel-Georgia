@@ -1,0 +1,29 @@
+.about-us {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  padding: 32px 0;
+}
+
+.about-us-section {
+  background-color: aliceblue;
+}
+
+.about-us-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.about-us-img {
+  display: flex;
+  flex: 1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.about-us-img img {
+  width: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+} /*# sourceMappingURL=style.module.css.map */
