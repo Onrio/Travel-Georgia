@@ -44,23 +44,23 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: true }
-          : country,
+          : country
       );
     case "RESTORE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: false }
-          : country,
+          : country
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, like: country.like + 1 }
-          : country,
+          : country
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like,
+        action.payload === "asc" ? a.like - b.like : b.like - a.like
       );
     default:
       return state;
@@ -98,7 +98,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string,
+    georgianAbout: string
   ) => {
     const newCountry: Country = {
       name,
@@ -134,12 +134,14 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     <section className={mainStyle["container"]}>
       <div className={style["country-card-header"]}>
         <h2 className={mainStyle["section-title"]}>
-          {translate("hero.title")}
+          {String(translate("hero.title"))}
         </h2>
         <div className={style["country-sort"]}>
           <button onClick={() => setSortByLikes("asc")}>Asc</button>
           <button onClick={() => setSortByLikes("desc")}>Desc</button>
-          <button onClick={openModal}>{translate("country.addCountry")}</button>
+          <button onClick={openModal}>
+            {String(translate("country.addCountry"))}
+          </button>
         </div>
       </div>
       <div className={style["country-card-row"]}>
