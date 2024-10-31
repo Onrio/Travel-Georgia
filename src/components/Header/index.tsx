@@ -36,14 +36,14 @@ const Header: React.FC = () => {
           <nav className={style["main-nav"]}>
             <ul>
               <li className={style["nav_item"]}>
-                <a href="#">{translate("header.travelTo") || "Travel To"}</a>
+                <a href="#">{String(translate("header.travelTo"))}</a>
               </li>
               <li className={style["main-nav-list"]}>
                 <NavLink
                   to={`/${lang || defaultLocale}/about`}
                   className={handleActiveNav}
                 >
-                  {translate("header.aboutUs") || "About Us"}
+                  {String(translate("header.aboutUs"))}
                 </NavLink>
               </li>
               <li className={style["nav_item"]}>
@@ -51,7 +51,7 @@ const Header: React.FC = () => {
                   to={`/${lang || defaultLocale}/contact`}
                   className={handleActiveNav}
                 >
-                  {translate("header.contact") || "Contact"}
+                  {String(translate("header.contact"))}
                 </NavLink>
               </li>
               <li>

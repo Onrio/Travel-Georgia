@@ -44,23 +44,23 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: true }
-          : country
+          : country,
       );
     case "RESTORE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: false }
-          : country
+          : country,
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, like: country.like + 1 }
-          : country
+          : country,
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like
+        action.payload === "asc" ? a.like - b.like : b.like - a.like,
       );
     default:
       return state;
@@ -98,7 +98,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string
+    georgianAbout: string,
   ) => {
     const newCountry: Country = {
       name,

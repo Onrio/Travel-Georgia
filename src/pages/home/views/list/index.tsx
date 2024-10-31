@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <>
       <Hero />
-      <CountryCards title="Discover Wine Destinations" />
+      <CountryCards />
     </>
   );
 };

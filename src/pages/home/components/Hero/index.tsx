@@ -10,9 +10,9 @@ const Hero: React.FC = () => {
     <section className={style["hero-section"]}>
       <div className={style["hero-section-thickness"]}>
         <div className={style["hero-section-content"]}>
-          <h1>{translate("hero.title")}</h1>
-          <p>{translate("hero.text")}</p>
-          <button>{translate("hero.button")}</button>
+          <h1>{String(translate("hero.title"))}</h1>
+          <p>{String(translate("hero.text"))}</p>
+          <button>{String(translate("hero.button"))}</button>
         </div>
       </div>
     </section>
