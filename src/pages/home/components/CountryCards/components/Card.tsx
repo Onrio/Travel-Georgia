@@ -18,14 +18,14 @@ interface CardProps {
   };
   handleLikeClick: () => void;
   handleDelete: () => void;
-  handleRestore: () => void;
+  handleEdit: () => void;
 }
 
 const Card: React.FC<CardProps> = ({
   cardData,
   handleLikeClick,
   handleDelete,
-  handleRestore,
+  handleEdit,
 }) => {
   const isDeleted = cardData.isDeleted;
   const cardClass = isDeleted
@@ -46,22 +46,19 @@ const Card: React.FC<CardProps> = ({
     e.preventDefault();
     handleDelete();
   };
-
-  const handleRestoreButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const hendleEditbutton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    handleRestore();
+    handleEdit();
   };
-
   const countryName = String(
-    translate(`countries.${cardData.originalIndex}.name`) || cardData.name,
+    translate(`countries.${cardData.originalIndex}.name`) || cardData.name
   );
   const countryCapital = String(
-    translate(`countries.${cardData.originalIndex}.capital`) ||
-      cardData.capital,
+    translate(`countries.${cardData.originalIndex}.capital`) || cardData.capital
   );
   const countryAbout = String(
-    translate(`countries.${cardData.originalIndex}.about`) || cardData.about,
+    translate(`countries.${cardData.originalIndex}.about`) || cardData.about
   );
 
   return (
@@ -71,10 +68,7 @@ const Card: React.FC<CardProps> = ({
           {cardData.image.startsWith("data:image/") ? (
             <img src={cardData.image} alt={`${cardData.name} Image`} />
           ) : (
-            <img
-              src={`/src/assets/vineyards/${cardData.image}`}
-              alt={`vineyard in ${cardData.name}`}
-            />
+            <img src={cardData.image} alt={`vineyard in ${cardData.name}`} />
           )}
         </div>
         <div className={style["card-body"]}>
@@ -86,22 +80,21 @@ const Card: React.FC<CardProps> = ({
             </div>
           </div>
           <p>{countryAbout}</p>
-          <div className={style["like-row"]}>
-            {isDeleted ? (
-              <button
-                className={style["restore-button"]}
-                onClick={handleRestoreButtonClick}
-              >
-                {String(translate("country.restore"))}
-              </button>
-            ) : (
+          <div className={style["button-row"]}>
+            <div className={style["button-row-left"]}>
               <button
                 className={style["delete-button"]}
                 onClick={handleDeleteButtonClick}
               >
                 {String(translate("country.delete"))}
               </button>
-            )}
+              <button
+                className={style["delete-button"]}
+                onClick={hendleEditbutton}
+              >
+                {String(translate("country.edit"))}
+              </button>
+            </div>
             <button
               onClick={handleLikeButtonClick}
               className={style["like-button"]}

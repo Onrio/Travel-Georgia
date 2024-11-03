@@ -1,0 +1,38 @@
+.liked-country-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+
+.country-image {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.country-image img {
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.country-title {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.country-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.info-row {
+  display: flex;
+  gap: 4px;
+}
+
+.info-title {
+  font-weight: bold;
+}/*# sourceMappingURL=style.module.css.map */

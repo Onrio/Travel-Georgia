@@ -23,20 +23,14 @@ type Namespace = {
     title: string;
     addCountry: string;
     delete: string;
+    edit: string;
     restore: string;
   };
-  countries: Array<{
-    georgianName: string;
-    georgianCapital: string;
-    georgianAbout: string;
-    name: string;
-    population: number;
+  popCountry: {
+    title: string;
+    population: string;
     capital: string;
-    about: string;
-    image: string;
-    id: string;
-    like: number;
-  }>;
+  };
 };
 
 export const namespaces: Record<string, Namespace> = {
@@ -89,53 +83,14 @@ export const namespaces: Record<string, Namespace> = {
       title: "აღმოაჩინეთ მიმართულება",
       addCountry: "დაამატე ქვეყანა",
       delete: "წაშლა",
+      edit: "შეცვლა",
       restore: "აღდგენა",
     },
-    countries: [
-      {
-        name: "იტალია",
-        population: 58.94,
-        capital: "რომი",
-        about: `იტალიის ღვინის კულტურა არის ისტორიის, ტრადიციის და
-                ვნება. მრავალფეროვანი რეგიონებით, ძირძველი ყურძნით და დროში დამსახურებული
-                მეღვინეობის მეთოდები, ის გთავაზობთ უნიკალურ და დაუვიწყარ
-                გამოცდილება.`,
-        image: "vineyards-italy.jpg",
-        id: "1",
-        like: 10,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-      {
-        name: "საფრანგეთი",
-        population: 67.97,
-        capital: "პარიზი",
-        about: `საფრანგეთის ღვინის კულტურა ცნობილია თავისი მდიდარი ისტორიით,
-                მრავალფეროვანი რეგიონები და მსოფლიო დონის ვენახები. ბორდოდან ბურგუნდიაში,
-                იგი აღნიშნავს ტრადიციას, ხელოსნობას და მეღვინეობის ხელოვნებას..`,
-        image: "vineyards-France.jpg",
-        id: "2",
-        like: 16,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-      {
-        name: "საქართველო",
-        population: 3.713,
-        capital: "თბილისი",
-        about: `საქართველო, ღვინის სამშობლო, ამაყობს 8000 წლიანი ტრადიციით
-                უნიკალური ქვევრის მეღვინეობით. მისი მდიდარი კულტურა აერთიანებს უძველეს ტექნიკას,
-                მრავალფეროვანი ყურძნის ჯიშები და ძლიერი ღვინის ფესტივალები.`,
-        image: "vineyards-georgia.jpg",
-        id: "3",
-        like: 90,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-    ],
+    popCountry: {
+      title: "ყველაზე პოპულარული ქვეყანა",
+      population: "მოსახლეობა",
+      capital: "დედაქალაქი",
+    },
   },
   en: {
     header: {
@@ -187,53 +142,14 @@ export const namespaces: Record<string, Namespace> = {
       title: "Discover Wine Destinations",
       addCountry: "Add Country",
       delete: "Delete",
+      edit: "Edit",
       restore: "Restor",
     },
-    countries: [
-      {
-        name: "italy",
-        population: 58.94,
-        capital: "Rome",
-        about: `Italy's wine culture is a rich tapestry of history, tradition, and
-                    passion. With diverse regions, indigenous grapes, and time-honored
-                    winemaking methods, it offers a unique and unforgettable
-                    experience.`,
-        image: "vineyards-italy.jpg",
-        id: "1",
-        like: 10,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-      {
-        name: "France",
-        population: 67.97,
-        capital: "Paris",
-        about: `France's wine culture is renowned for its rich history, 
-                    diverse regions, and world-class vineyards. From Bordeaux to Burgundy, 
-                    it celebrates tradition, craftsmanship, and the art of winemaking.`,
-        image: "vineyards-France.jpg",
-        id: "2",
-        like: 16,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-      {
-        name: "Georgia",
-        population: 3.713,
-        capital: "Tbilisi",
-        about: `Georgia, the birthplace of wine, boasts an 8,000-year-old tradition 
-                  with unique qvevri winemaking. Its rich culture blends ancient techniques, 
-                  diverse grape varieties, and vibrant wine festivals.`,
-        image: "vineyards-georgia.jpg",
-        id: "3",
-        like: 90,
-        georgianAbout: "",
-        georgianName: "",
-        georgianCapital: "",
-      },
-    ],
+    popCountry: {
+      title: "Most popular country",
+      population: "Population",
+      capital: "Capital",
+    },
   },
 };
 
@@ -244,7 +160,7 @@ type NamespaceValue = string | number | boolean | object | null | undefined;
 
 function getNestedValue<T extends NamespaceValue>(
   obj: T,
-  key: string,
+  key: string
 ): NamespaceValue {
   return key.split(".").reduce<NamespaceValue | undefined>((o, i) => {
     if (o && typeof o === "object" && i in o) {

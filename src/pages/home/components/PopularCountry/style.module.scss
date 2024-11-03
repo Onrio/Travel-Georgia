@@ -1,0 +1,32 @@
+.liked-country-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+.country-image {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  img {
+    width: 100%;
+    object-fit: cover;
+  }
+}
+.country-title {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+.country-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.info-row {
+  display: flex;
+  gap: 4px;
+}
+.info-title {
+  font-weight: bold;
+}

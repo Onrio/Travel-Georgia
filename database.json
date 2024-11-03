@@ -1,0 +1,40 @@
+{
+  "countries": [
+    {
+      "name": "Italy",
+      "population": 58.94,
+      "capital": "Rome",
+      "about": "Italy's wine culture is a rich tapestry of history, tradition, and passion. With diverse regions, indigenous grapes, and time-honored winemaking methods, it offers a unique and unforgettable experience.",
+      "image": "/src/assets/vineyards/vineyards-italy.jpg",
+      "id": "1",
+      "like": 10,
+      "georgianAbout": "იტალიის ღვინის კულტურა არის ისტორიის, ტრადიციის და ვნება. მრავალფეროვანი რეგიონებით, ძირძველი ყურძნით და დროში დამსახურებული მეღვინეობის მეთოდები, ის გთავაზობთ უნიკალურ და დაუვიწყარ გამოცდილება.",
+      "georgianName": "იტალია",
+      "georgianCapital": "რომი"
+    },
+    {
+      "name": "France",
+      "population": 67.97,
+      "capital": "Paris",
+      "about": "France's wine culture is renowned for its rich history, diverse regions, and world-class vineyards. From Bordeaux to Burgundy, it celebrates tradition, craftsmanship, and the art of winemaking.",
+      "image": "/src/assets/vineyards/vineyards-France.jpg",
+      "id": "2",
+      "like": 16,
+      "georgianAbout": "საფრანგეთის ღვინის კულტურა ცნობილია თავისი მდიდარი ისტორიით, მრავალფეროვანი რეგიონები და მსოფლიო დონის ვენახები. ბორდოდან ბურგუნდიაში, იგი აღნიშნავს ტრადიციას, ხელოსნობას და მეღვინეობის ხელოვნებას..",
+      "georgianName": "საფრანგეთი",
+      "georgianCapital": "პარიზი"
+    },
+    {
+      "name": "Georgia",
+      "population": 3.713,
+      "capital": "Tbilisi",
+      "about": "Georgia, the birthplace of wine, boasts an 8,000-year-old tradition with unique qvevri winemaking. Its rich culture blends ancient techniques, diverse grape varieties, and vibrant wine festivals.",
+      "image": "/src/assets/vineyards/vineyards-georgia.jpg",
+      "id": "3",
+      "like": 90,
+      "georgianAbout": "საქართველო, ღვინის სამშობლო, ამაყობს 8000 წლიანი ტრადიციით უნიკალური ქვევრის მეღვინეობით. მისი მდიდარი კულტურა აერთიანებს უძველეს ტექნიკას, მრავალფეროვანი ყურძნის ჯიშები და ძლიერი ღვინის ფესტივალები.",
+      "georgianName": "საქართველო",
+      "georgianCapital": "თბილისი"
+    }
+  ]
+}

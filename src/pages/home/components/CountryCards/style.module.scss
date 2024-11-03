@@ -62,7 +62,7 @@
     font-weight: 500;
   }
 }
-.like-row {
+.button-row {
   display: flex;
   justify-content: space-between;
   .like-button {
@@ -85,6 +85,10 @@
       object-fit: cover;
     }
   }
+}
+.button-row-left {
+  display: flex;
+  gap: 8px;
 }
 .modal {
   position: fixed;
@@ -127,7 +131,7 @@
   color: red;
 }
 .deleted {
-  opacity: 0.5;
+  display: none;
 }
 .swiper-button-prev,
 .swiper-button-next {

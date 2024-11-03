@@ -1,20 +1,25 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import style from "./style.module.css";
 import mainStyle from "@/style/index.module.css";
 import Card from "./components/Card";
 import Modal from "./components/Modal";
-import { getTranslation, defaultLocale, namespaces } from "@/dammyData";
+import EditModal from "./components/EditModal";
+
+import { getTranslation, defaultLocale } from "@/dammyData";
 import "react-multi-carousel/lib/styles.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = "http://localhost:5000/countries";
 
 type ActionType =
+  | { type: "SET_COUNTRIES"; payload: Country[] }
   | { type: "ADD_COUNTRY"; payload: Country }
   | { type: "DELETE_COUNTRY"; payload: string }
-  | { type: "RESTORE_COUNTRY"; payload: string }
   | { type: "LIKE_COUNTRY"; payload: string }
   | { type: "SORT_BY_LIKES"; payload: "asc" | "desc" };
 
@@ -35,6 +40,8 @@ type Country = {
 
 const countryReducer = (state: Country[], action: ActionType): Country[] => {
   switch (action.type) {
+    case "SET_COUNTRIES":
+      return action.payload;
     case "ADD_COUNTRY":
       return [
         ...state,
@@ -44,43 +51,51 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: true }
-          : country,
-      );
-    case "RESTORE_COUNTRY":
-      return state.map((country) =>
-        country.id === action.payload
-          ? { ...country, isDeleted: false }
-          : country,
+          : country
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, like: country.like + 1 }
-          : country,
+          : country
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like,
+        action.payload === "asc" ? a.like - b.like : b.like - a.like
       );
     default:
       return state;
   }
 };
-const countries = namespaces.ka.countries;
-
-const initialState: Country[] = countries.map((country, index) => ({
-  ...country,
-  isDeleted: false,
-  originalIndex: index,
-}));
 
 const CountryCards: React.FC<{ lang?: string }> = () => {
-  const [countryData, dispatch] = useReducer(countryReducer, initialState);
+  const [countryData, dispatch] = useReducer(countryReducer, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortByLikes, setSortByLikes] = useState<"asc" | "desc" | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editCountry, setEditCountry] = useState<Country | null>(null);
 
   const { lang } = useParams<{ lang: string }>();
   const translate = getTranslation(lang || defaultLocale);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const countries = response.data.map((country: any, index: number) => ({
+          ...country,
+          isDeleted: false,
+          originalIndex: index,
+        }));
+        dispatch({ type: "SET_COUNTRIES", payload: countries });
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -89,8 +104,12 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const openEditModal = (country: Country) => {
+    setEditCountry(country);
+    setIsEditModalOpen(true);
+  };
 
-  const handleAddCountry = (
+  const handleAddCountry = async (
     name: string,
     capital: string,
     population: number,
@@ -98,7 +117,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string,
+    georgianAbout: string
   ) => {
     const newCountry: Country = {
       name,
@@ -115,8 +134,23 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       georgianAbout,
     };
 
-    dispatch({ type: "ADD_COUNTRY", payload: newCountry });
+    try {
+      const response = await axios.post(API_URL, newCountry);
+      dispatch({ type: "ADD_COUNTRY", payload: response.data });
+    } catch (error) {
+      console.error("Error adding country:", error);
+    }
+
     closeModal();
+  };
+
+  const handleDeleteCountry = async (countryId: string) => {
+    try {
+      await axios.delete(`${API_URL}/${countryId}`);
+      dispatch({ type: "DELETE_COUNTRY", payload: countryId });
+    } catch (error) {
+      console.error("Error deleting country:", error);
+    }
   };
 
   const sortedCountries = [...countryData]
@@ -130,6 +164,22 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       return a.isDeleted === b.isDeleted ? 0 : a.isDeleted ? 1 : -1;
     });
 
+  const closeEditModal = () => setIsEditModalOpen(false);
+
+  const handleEditCountry = async (updatedCountry: Country) => {
+    try {
+      await axios.put(`${API_URL}/${updatedCountry.id}`, updatedCountry);
+      dispatch({
+        type: "SET_COUNTRIES",
+        payload: countryData.map((country) =>
+          country.id === updatedCountry.id ? updatedCountry : country
+        ),
+      });
+    } catch (error) {
+      console.error("Error updating country:", error);
+    }
+    closeEditModal();
+  };
   return (
     <section className={mainStyle["container"]}>
       <div className={style["country-card-header"]}>
@@ -168,12 +218,8 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
                 handleLikeClick={() =>
                   dispatch({ type: "LIKE_COUNTRY", payload: country.id })
                 }
-                handleDelete={() =>
-                  dispatch({ type: "DELETE_COUNTRY", payload: country.id })
-                }
-                handleRestore={() =>
-                  dispatch({ type: "RESTORE_COUNTRY", payload: country.id })
-                }
+                handleDelete={() => handleDeleteCountry(country.id)}
+                handleEdit={() => openEditModal(country)}
               />
             </SwiperSlide>
           ))}
@@ -191,6 +237,13 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
         onClose={closeModal}
         onSubmit={handleAddCountry}
       />
+      {isEditModalOpen && editCountry && (
+        <EditModal
+          country={editCountry}
+          onClose={closeEditModal}
+          onSubmit={handleEditCountry}
+        />
+      )}
     </section>
   );
 };

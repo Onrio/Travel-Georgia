@@ -12,7 +12,7 @@ interface ModalProps {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string,
+    georgianAbout: string
   ) => void;
 }
 
@@ -32,38 +32,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [populationError, setPopulationError] = useState("");
   const [aboutError, setAboutError] = useState("");
   const [imageError, setImageError] = useState("");
-
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-    setNameError("");
-  };
-
-  const handleSetCapital = (e: ChangeEvent<HTMLInputElement>) => {
-    setCapital(e.target.value);
-    setCapitalError("");
-  };
-
-  const handleSetPopulation = (e: ChangeEvent<HTMLInputElement>) => {
-    setPopulation(e.target.value);
-    setPopulationError("");
-  };
-
-  const handleCountryInfo = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setInfo(e.target.value);
-    setAboutError("");
-  };
-
-  const handleGeorgianNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setGeorgianName(e.target.value);
-  };
-
-  const handleGeorgianCapitalChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setGeorgianCapital(e.target.value);
-  };
-
-  const handleGeorgianAboutChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setGeorgianAbout(e.target.value);
-  };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,8 +93,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
       image as string,
       georgianName,
       georgianCapital,
-      georgianAbout,
+      georgianAbout
     );
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -146,7 +115,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
             name="name"
             placeholder="Country name"
             value={name}
-            onChange={handleChangeName}
+            onChange={(e) => setName(e.target.value)}
           />
           {nameError && (
             <span className={style["input-error"]}>{nameError}</span>
@@ -157,7 +126,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
             name="capital"
             placeholder="Country capital"
             value={capital}
-            onChange={handleSetCapital}
+            onChange={(e) => setCapital(e.target.value)}
           />
           {capitalError && (
             <span className={style["input-error"]}>{capitalError}</span>
@@ -168,50 +137,47 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
             name="population"
             placeholder="Population"
             value={population}
-            onChange={handleSetPopulation}
+            onChange={(e) => setPopulation(e.target.value)}
           />
           {populationError && (
             <span className={style["input-error"]}>{populationError}</span>
           )}
 
           <textarea
-            name="info"
+            name="about"
             placeholder="About country"
             value={about}
-            onChange={handleCountryInfo}
+            onChange={(e) => setInfo(e.target.value)}
           ></textarea>
           {aboutError && (
             <span className={style["input-error"]}>{aboutError}</span>
           )}
 
-          <input
-            type="file"
-            accept="image/jpeg, image/png"
-            onChange={handleImageChange}
-          />
+          <input type="file" accept="image/*" onChange={handleImageChange} />
           {imageError && (
             <span className={style["input-error"]}>{imageError}</span>
           )}
+
           <h3>Georgian Information</h3>
           <input
             type="text"
             name="georgianName"
             placeholder="Georgian name"
             value={georgianName}
-            onChange={handleGeorgianNameChange}
+            onChange={(e) => setGeorgianName(e.target.value)}
           />
           <input
             type="text"
             name="georgianCapital"
             placeholder="Georgian capital"
             value={georgianCapital}
-            onChange={handleGeorgianCapitalChange}
+            onChange={(e) => setGeorgianCapital(e.target.value)}
           />
           <textarea
             name="georgianAbout"
             placeholder="Georgian about"
             value={georgianAbout}
-            onChange={handleGeorgianAboutChange}
+            onChange={(e) => setGeorgianAbout(e.target.value)}
           ></textarea>
 
           <button type="submit">Add Country</button>
