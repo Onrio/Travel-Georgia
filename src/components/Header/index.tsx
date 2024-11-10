@@ -54,6 +54,14 @@ const Header: React.FC = () => {
                   {String(translate("header.contact"))}
                 </NavLink>
               </li>
+              <li className={style["nav_item"]}>
+                <NavLink
+                  to={`/${lang || defaultLocale}/countries`}
+                  className={handleActiveNav}
+                >
+                  {String(translate("header.countries"))}
+                </NavLink>
+              </li>
               <li>
                 <button
                   onClick={toggleLanguage}

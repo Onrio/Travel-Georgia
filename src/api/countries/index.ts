@@ -2,9 +2,10 @@ import { httpClient } from "../index";
 import { Country } from "@/pages/home/components/CountryCards/index";
 
 // Fetch all countries
-export const getCountries = async (): Promise<Country[]> => {
+export const getCountries = async (sortOrder: "asc" | "desc" | null = null): Promise<Country[]> => {
   try {
-    const response = await httpClient.get("/");
+    const queryParam = sortOrder ? `?_sort=${sortOrder === "asc" ? "like" : "-like"}` : "";
+    const response = await httpClient.get(`/${queryParam}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching countries:", error);
@@ -23,7 +24,7 @@ export const addCountry = async (country: Country): Promise<Country> => {
   }
 };
 
-// Delete a country by ID
+// Delete a country
 export const deleteCountry = async (countryId: string): Promise<void> => {
   try {
     await httpClient.delete(`/${countryId}`);
@@ -33,7 +34,7 @@ export const deleteCountry = async (countryId: string): Promise<void> => {
   }
 };
 
-// Edit a country by ID
+// Edit a country
 export const editCountry = async (
   countryId: string,
   updatedCountry: Country,
@@ -55,5 +56,23 @@ export const getCountryById = async (id: string): Promise<Country | null> => {
   } catch (error) {
     console.error(`Error fetching country with ID ${id}:`, error);
     return null;
+  }
+};
+
+// Like a country
+export const likeCountry = async (countryId: string): Promise<Country> => {
+  try {
+    const country = await getCountryById(countryId);
+
+    if (!country) throw new Error("Country not found");
+
+    const updatedCountry = { ...country, like: country.like + 1 };
+
+    const response = await httpClient.put(`/${countryId}`, updatedCountry);
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error liking country with ID ${countryId}:`, error);
+    throw new Error("Failed to like country.");
   }
 };

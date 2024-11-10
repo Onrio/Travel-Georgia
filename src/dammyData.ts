@@ -3,6 +3,7 @@ type Namespace = {
     travelTo: string;
     aboutUs: string;
     contact: string;
+    countries: string;
   };
   hero: {
     title: string;
@@ -39,6 +40,7 @@ export const namespaces: Record<string, Namespace> = {
       travelTo: "მოგზაურობა",
       aboutUs: "ჩვენს შესახებ",
       contact: "კონტაქტი",
+      countries: "ქვეყანები",
     },
     hero: {
       title: "აღმოაჩინე მსოფლიო ჭიქით",
@@ -97,6 +99,7 @@ export const namespaces: Record<string, Namespace> = {
       travelTo: "Travel To",
       aboutUs: "About Us",
       contact: "Contact",
+      countries: "Countries",
     },
     hero: {
       title: "Explore the World, One Glass at a Time",

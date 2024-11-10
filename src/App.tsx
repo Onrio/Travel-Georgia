@@ -8,6 +8,7 @@ import React from "react";
 import CountryView from "@/pages/home/views/country-article/country-article";
 import Contact from "./pages/contact";
 import LangGuard from "./components/Guards/lang-guard";
+import CountryList from "@/pages/countres/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const Home = React.lazy(() => import("@/pages/home/views/list/index"));
@@ -39,6 +40,7 @@ const App = () => {
               <Route path="contact" element={<Contact />} />
               <Route path="about" element={<About />} />
               <Route path="*" element={<Error404 />} />
+              <Route path="countries" element={<CountryList />} />
             </Route>
           </Route>
         </Routes>

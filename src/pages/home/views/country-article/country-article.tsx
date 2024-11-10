@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import style from "./style.module.css";
 import mainStyle from "@/style/index.module.css";
+import { useQuery } from "@tanstack/react-query";
 import { getCountryById } from "@/api/countries/index";
 
 interface ArticleData {
@@ -12,56 +12,47 @@ interface ArticleData {
 
 const CountryArticle = () => {
   const { id, lang } = useParams<{ id: string; lang: string }>();
-  const [articleData, setArticleData] = useState<ArticleData | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!id) {
-      setError("Country ID is missing.");
-      return;
-    }
-
-    const fetchCountryData = async () => {
-      try {
-        const country = await getCountryById(id);
-        if (country) {
-          setArticleData({
-            name: lang === "ka" ? country.georgianName : country.name,
-            about: lang === "ka" ? country.georgianAbout : country.about,
-            image: country.image,
-          });
-        } else {
-          setError("Article not found :/");
-        }
-      } catch (err) {
-        console.error("Error fetching article:", err);
-        setError("Failed to load article data :/");
+  const { data: country, error, isLoading } = useQuery<ArticleData | null, Error>({
+    queryKey: ["country", id, lang],
+    queryFn: async () => {
+      if (!id) throw new Error("Country ID is missing.");
+      const countryData = await getCountryById(id);
+      if (countryData) {
+        return {
+          name: lang === "ka" ? countryData.georgianName : countryData.name,
+          about: lang === "ka" ? countryData.georgianAbout : countryData.about,
+          image: countryData.image,
+        };
+      } else {
+        throw new Error("Country not found");
       }
-    };
+    },
+  });
 
-    fetchCountryData();
-  }, [id, lang]);
 
   if (error) {
-    return <div>{error}</div>;
+    console.error("Error fetching country:", error);
   }
 
-  if (!articleData) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  const { name, about, image } = articleData;
+  if (!country) {
+    return <div>No country data available</div>;
+  }
 
   return (
     <section>
       <div className={mainStyle["container"]}>
         <div className={style["country-view-row"]}>
           <div className={style["country-view-info"]}>
-            <h2>{name}</h2>
-            <p>{about}</p>
+            <h2>{country.name}</h2>
+            <p>{country.about}</p>
           </div>
           <div className={style["country-view-image"]}>
-            <img src={image} alt={`vineyard in ${name}`} />
+            <img src={country.image} alt={`vineyard in ${country.name}`} />
           </div>
         </div>
       </div>

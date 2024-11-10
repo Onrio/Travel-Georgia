@@ -1,4 +1,5 @@
 import React, { useReducer, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import style from "./style.module.css";
 import mainStyle from "@/style/index.module.css";
 import Card from "./components/Card";
@@ -15,13 +16,13 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  UseQueryOptions,
 } from "@tanstack/react-query";
 import {
   getCountries,
   addCountry,
   deleteCountry,
   editCountry,
+  likeCountry,
 } from "@/api/countries";
 
 export type Country = {
@@ -57,19 +58,15 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       ];
     case "DELETE_COUNTRY":
       return state.map((country) =>
-        country.id === action.payload
-          ? { ...country, isDeleted: true }
-          : country,
+        country.id === action.payload ? { ...country, isDeleted: true } : country
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
-        country.id === action.payload
-          ? { ...country, like: country.like + 1 }
-          : country,
+        country.id === action.payload ? { ...country, like: country.like + 1 } : country
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like,
+        action.payload === "asc" ? a.like - b.like : b.like - a.like
       );
     default:
       return state;
@@ -79,7 +76,8 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
 const CountryCards: React.FC<{ lang?: string }> = () => {
   const [countryData, dispatch] = useReducer(countryReducer, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortByLikes, setSortByLikes] = useState<"asc" | "desc" | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sortByLikes = searchParams.get("sort") as "asc" | "desc" | null;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [countryToEdit, setCountryToEdit] = useState<Country | null>(null);
   const { lang } = useParams<{ lang: string }>();
@@ -108,13 +106,12 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     Error,
     { countryId: string; updatedCountry: Country }
   >({
-    mutationFn: ({ countryId, updatedCountry }) =>
-      editCountry(countryId, updatedCountry),
+    mutationFn: ({ countryId, updatedCountry }) => editCountry(countryId, updatedCountry),
     onSuccess: (updatedCountry: Country) => {
       dispatch({
         type: "SET_COUNTRIES",
         payload: countryData.map((country) =>
-          country.id === updatedCountry.id ? updatedCountry : country,
+          country.id === updatedCountry.id ? updatedCountry : country
         ),
       });
       queryClient.invalidateQueries({ queryKey: ["countries"] });
@@ -122,46 +119,32 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     },
   });
 
-  const {
-    data: countries,
-    error,
-    isLoading,
-  } = useQuery<Country[], Error>({
-    queryKey: ["countries"],
-    queryFn: getCountries,
-    initialData: [],
-    onSuccess: (data: Country[]) => {
-      console.log("Fetched countries:", data);
+  const likeCountryMutation = useMutation<Country, Error, string>({
+    mutationFn: likeCountry,
+    onSuccess: (likedCountry) => {
+      dispatch({
+        type: "LIKE_COUNTRY",
+        payload: likedCountry.id,
+      });
+      queryClient.invalidateQueries({ queryKey: ["countries"] });
     },
-    onError: (err: Error) => {
-      console.error("Error fetching countries:", err);
-    },
-  } as UseQueryOptions<Country[], Error>);
-
+  });
+  const sortOrder = searchParams.get("sort") as "asc" | "desc" | null;
+  
+  const { data: countries, error, isLoading } = useQuery({
+    queryKey: ["countries", sortOrder],
+    queryFn: () => getCountries(sortOrder),
+  });
+  
   useEffect(() => {
     if (countries) {
-      dispatch({
-        type: "SET_COUNTRIES",
-        payload: countries.map((country, index) => ({
-          ...country,
-          isDeleted: false,
-          originalIndex: index,
-        })),
-      });
+      dispatch({ type: "SET_COUNTRIES", payload: countries });
     }
   }, [countries]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!countries || countries.length === 0) {
-    return <div>No countries data available</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!Array.isArray(countries) || countries.length === 0) return <div>No countries data available</div>;
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -180,7 +163,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string,
+    georgianAbout: string
   ) => {
     const newCountry: Country = {
       name,
@@ -198,7 +181,6 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     };
     addCountryMutation.mutate(newCountry);
   };
-
   const handleDeleteCountry = (countryId: string) => {
     deleteCountryMutation.mutate(countryId);
   };
@@ -210,6 +192,11 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     });
   };
 
+  const handleSortByLikes = (order: "asc" | "desc") => {
+    setSearchParams({ sort: order });
+    dispatch({ type: "SORT_BY_LIKES", payload: order });
+  };
+
   const sortedCountries = [...countryData]
     .sort((a, b) => {
       if (sortByLikes) {
@@ -219,6 +206,12 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     })
     .sort((a, b) => (a.isDeleted === b.isDeleted ? 0 : a.isDeleted ? 1 : -1));
 
+  const visibleCountries = sortedCountries.filter((country) => !country.isDeleted);
+
+  const handleLikeCountry = (countryId: string) => {
+    likeCountryMutation.mutate(countryId);
+  };
+
   return (
     <section className={mainStyle["container"]}>
       <div className={style["country-card-header"]}>
@@ -226,8 +219,8 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
           {String(translate("hero.title"))}
         </h2>
         <div className={style["country-sort"]}>
-          <button onClick={() => setSortByLikes("asc")}>Asc</button>
-          <button onClick={() => setSortByLikes("desc")}>Desc</button>
+          <button onClick={() => handleSortByLikes("asc")}>Asc</button>
+          <button onClick={() => handleSortByLikes("desc")}>Desc</button>
           <button onClick={openModal}>
             {String(translate("country.addCountry"))}
           </button>
@@ -236,7 +229,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       <div className={style["country-card-row"]}>
         <Swiper
           spaceBetween={8}
-          slidesPerView={Math.min(3, sortedCountries.length)}
+          slidesPerView={Math.min(3, visibleCountries.length)}
           pagination={{ clickable: true }}
           navigation={{
             prevEl: `.${style["swiper-button-prev"]}`,
@@ -244,19 +237,16 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
           }}
           modules={[Navigation]}
         >
-          {sortedCountries.map((country) => (
+          {visibleCountries.map((country) => (
             <SwiperSlide key={country.id}>
               <Card
                 cardData={{
                   ...country,
                   name: lang === "ka" ? country.georgianName : country.name,
-                  capital:
-                    lang === "ka" ? country.georgianCapital : country.capital,
+                  capital: lang === "ka" ? country.georgianCapital : country.capital,
                   about: lang === "ka" ? country.georgianAbout : country.about,
                 }}
-                handleLikeClick={() =>
-                  dispatch({ type: "LIKE_COUNTRY", payload: country.id })
-                }
+                handleLikeClick={() => handleLikeCountry(country.id)}
                 handleDelete={() => handleDeleteCountry(country.id)}
                 handleEdit={() => openEditModal(country)}
               />

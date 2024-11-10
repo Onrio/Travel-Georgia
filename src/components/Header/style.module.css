@@ -16,7 +16,7 @@ header {
 .logo img {
   width: 100%;
   -o-object-fit: cover;
-  object-fit: cover;
+     object-fit: cover;
 }
 
 .main-nav ul {
@@ -29,4 +29,4 @@ header {
 .main-nav ul .active_nav_item {
   color: black;
   text-decoration: underline;
-} /*# sourceMappingURL=style.module.css.map */
+}/*# sourceMappingURL=style.module.css.map */
