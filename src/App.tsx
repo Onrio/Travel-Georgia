@@ -8,32 +8,42 @@ import React from "react";
 import CountryView from "@/pages/home/views/country-article/country-article";
 import Contact from "./pages/contact";
 import LangGuard from "./components/Guards/lang-guard";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const Home = React.lazy(() => import("@/pages/home/views/list/index"));
 
+const queryClient = new QueryClient();
+
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="" element={<Navigate to="/ge" />} />
-        <Route path=":lang" element={<LangGuard />}>
-          <Route element={<Layout />}>
-            <Route
-              index
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Home />
-                </Suspense>
-              }
-            />
-            <Route path="country-view/:id" element={<CountryView />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="about" element={<About />} />
-            <Route path="*" element={<Error404 />} />
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <Routes>
+          <Route path="" element={<Navigate to="/en" />} />
+          <Route path=":lang" element={<LangGuard />}>
+            <Route element={<Layout />}>
+              <Route
+                index
+                element={
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <Home />
+                  </Suspense>
+                }
+              />
+              <Route path="country-view/:id" element={<CountryView />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="about" element={<About />} />
+              <Route path="*" element={<Error404 />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 

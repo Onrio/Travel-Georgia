@@ -11,8 +11,8 @@ type Country = {
   like: number;
   isDeleted: boolean;
   originalIndex: number;
-  georgianName: string; 
-  georgianCapital: string; 
+  georgianName: string;
+  georgianCapital: string;
   georgianAbout: string;
 };
 
@@ -35,13 +35,28 @@ const EditModal: React.FC<EditModalProps> = ({
     georgianName: country.georgianName,
     georgianCapital: country.georgianCapital,
     georgianAbout: country.georgianAbout,
+    image: country.image,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData,
+          image: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -106,6 +121,12 @@ const EditModal: React.FC<EditModalProps> = ({
             onChange={handleChange}
             placeholder="Georgian About"
           ></textarea>
+          <input
+            type="file"
+            name="image"
+            onChange={handleFileChange}
+            accept="image/*"
+          />
           <button type="submit">Save Changes</button>
         </form>
       </div>

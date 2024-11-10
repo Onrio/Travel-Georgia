@@ -160,7 +160,7 @@ type NamespaceValue = string | number | boolean | object | null | undefined;
 
 function getNestedValue<T extends NamespaceValue>(
   obj: T,
-  key: string
+  key: string,
 ): NamespaceValue {
   return key.split(".").reduce<NamespaceValue | undefined>((o, i) => {
     if (o && typeof o === "object" && i in o) {

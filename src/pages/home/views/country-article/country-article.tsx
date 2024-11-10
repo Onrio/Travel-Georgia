@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import style from "./style.module.css";
 import mainStyle from "@/style/index.module.css";
-import axios from "axios";
+import { getCountryById } from "@/api/countries/index";
 
 interface ArticleData {
   name: string;
@@ -12,23 +12,23 @@ interface ArticleData {
 
 const CountryArticle = () => {
   const { id, lang } = useParams<{ id: string; lang: string }>();
-
   const [articleData, setArticleData] = useState<ArticleData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!id) {
+      setError("Country ID is missing.");
+      return;
+    }
+
     const fetchCountryData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/countries/${id}`
-        );
-        if (response.data) {
+        const country = await getCountryById(id);
+        if (country) {
           setArticleData({
-            name:
-              lang === "ka" ? response.data.georgianName : response.data.name,
-            about:
-              lang === "ka" ? response.data.georgianAbout : response.data.about,
-            image: response.data.image,
+            name: lang === "ka" ? country.georgianName : country.name,
+            about: lang === "ka" ? country.georgianAbout : country.about,
+            image: country.image,
           });
         } else {
           setError("Article not found :/");

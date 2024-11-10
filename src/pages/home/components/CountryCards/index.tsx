@@ -4,7 +4,6 @@ import mainStyle from "@/style/index.module.css";
 import Card from "./components/Card";
 import Modal from "./components/Modal";
 import EditModal from "./components/EditModal";
-
 import { getTranslation, defaultLocale } from "@/dammyData";
 import "react-multi-carousel/lib/styles.css";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,18 +11,20 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  getCountries,
+  addCountry,
+  deleteCountry,
+  editCountry,
+} from "@/api/countries";
 
-const API_URL = "http://localhost:5000/countries";
-
-type ActionType =
-  | { type: "SET_COUNTRIES"; payload: Country[] }
-  | { type: "ADD_COUNTRY"; payload: Country }
-  | { type: "DELETE_COUNTRY"; payload: string }
-  | { type: "LIKE_COUNTRY"; payload: string }
-  | { type: "SORT_BY_LIKES"; payload: "asc" | "desc" };
-
-type Country = {
+export type Country = {
   name: string;
   population: number;
   capital: string;
@@ -38,6 +39,13 @@ type Country = {
   georgianAbout: string;
 };
 
+type ActionType =
+  | { type: "SET_COUNTRIES"; payload: Country[] }
+  | { type: "ADD_COUNTRY"; payload: Country }
+  | { type: "DELETE_COUNTRY"; payload: string }
+  | { type: "LIKE_COUNTRY"; payload: string }
+  | { type: "SORT_BY_LIKES"; payload: "asc" | "desc" };
+
 const countryReducer = (state: Country[], action: ActionType): Country[] => {
   switch (action.type) {
     case "SET_COUNTRIES":
@@ -51,17 +59,17 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, isDeleted: true }
-          : country
+          : country,
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
         country.id === action.payload
           ? { ...country, like: country.like + 1 }
-          : country
+          : country,
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like
+        action.payload === "asc" ? a.like - b.like : b.like - a.like,
       );
     default:
       return state;
@@ -73,43 +81,98 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortByLikes, setSortByLikes] = useState<"asc" | "desc" | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editCountry, setEditCountry] = useState<Country | null>(null);
-
+  const [countryToEdit, setCountryToEdit] = useState<Country | null>(null);
   const { lang } = useParams<{ lang: string }>();
   const translate = getTranslation(lang || defaultLocale);
+  const queryClient = useQueryClient();
+
+  const addCountryMutation = useMutation<Country, Error, Country>({
+    mutationFn: addCountry,
+    onSuccess: (newCountry) => {
+      dispatch({ type: "ADD_COUNTRY", payload: newCountry });
+      queryClient.invalidateQueries({ queryKey: ["countries"] });
+      setIsModalOpen(false);
+    },
+  });
+
+  const deleteCountryMutation = useMutation<void, Error, string>({
+    mutationFn: (countryId: string) => deleteCountry(countryId),
+    onSuccess: (_, countryId) => {
+      dispatch({ type: "DELETE_COUNTRY", payload: countryId });
+      queryClient.invalidateQueries({ queryKey: ["countries"] });
+    },
+  });
+
+  const editCountryMutation = useMutation<
+    Country,
+    Error,
+    { countryId: string; updatedCountry: Country }
+  >({
+    mutationFn: ({ countryId, updatedCountry }) =>
+      editCountry(countryId, updatedCountry),
+    onSuccess: (updatedCountry: Country) => {
+      dispatch({
+        type: "SET_COUNTRIES",
+        payload: countryData.map((country) =>
+          country.id === updatedCountry.id ? updatedCountry : country,
+        ),
+      });
+      queryClient.invalidateQueries({ queryKey: ["countries"] });
+      setIsEditModalOpen(false);
+    },
+  });
+
+  const {
+    data: countries,
+    error,
+    isLoading,
+  } = useQuery<Country[], Error>({
+    queryKey: ["countries"],
+    queryFn: getCountries,
+    initialData: [],
+    onSuccess: (data: Country[]) => {
+      console.log("Fetched countries:", data);
+    },
+    onError: (err: Error) => {
+      console.error("Error fetching countries:", err);
+    },
+  } as UseQueryOptions<Country[], Error>);
 
   useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get(API_URL);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const countries = response.data.map((country: any, index: number) => ({
+    if (countries) {
+      dispatch({
+        type: "SET_COUNTRIES",
+        payload: countries.map((country, index) => ({
           ...country,
           isDeleted: false,
           originalIndex: index,
-        }));
-        dispatch({ type: "SET_COUNTRIES", payload: countries });
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      }
-    };
+        })),
+      });
+    }
+  }, [countries]);
 
-    fetchCountries();
-  }, []);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  if (!countries || countries.length === 0) {
+    return <div>No countries data available</div>;
+  }
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   const openEditModal = (country: Country) => {
-    setEditCountry(country);
+    setCountryToEdit(country);
     setIsEditModalOpen(true);
   };
+  const closeEditModal = () => setIsEditModalOpen(false);
 
-  const handleAddCountry = async (
+  const handleAddCountry = (
     name: string,
     capital: string,
     population: number,
@@ -117,7 +180,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string
+    georgianAbout: string,
   ) => {
     const newCountry: Country = {
       name,
@@ -126,31 +189,25 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       about,
       image,
       like: 0,
-      id: (Number(countryData.at(-1)?.id) + 1).toString(),
+      id: (countryData.length + 1).toString(),
       isDeleted: false,
       originalIndex: countryData.length,
       georgianName,
       georgianCapital,
       georgianAbout,
     };
-
-    try {
-      const response = await axios.post(API_URL, newCountry);
-      dispatch({ type: "ADD_COUNTRY", payload: response.data });
-    } catch (error) {
-      console.error("Error adding country:", error);
-    }
-
-    closeModal();
+    addCountryMutation.mutate(newCountry);
   };
 
-  const handleDeleteCountry = async (countryId: string) => {
-    try {
-      await axios.delete(`${API_URL}/${countryId}`);
-      dispatch({ type: "DELETE_COUNTRY", payload: countryId });
-    } catch (error) {
-      console.error("Error deleting country:", error);
-    }
+  const handleDeleteCountry = (countryId: string) => {
+    deleteCountryMutation.mutate(countryId);
+  };
+
+  const handleEditCountry = (updatedCountry: Country) => {
+    editCountryMutation.mutate({
+      countryId: updatedCountry.id,
+      updatedCountry,
+    });
   };
 
   const sortedCountries = [...countryData]
@@ -160,26 +217,8 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       }
       return a.originalIndex - b.originalIndex;
     })
-    .sort((a, b) => {
-      return a.isDeleted === b.isDeleted ? 0 : a.isDeleted ? 1 : -1;
-    });
+    .sort((a, b) => (a.isDeleted === b.isDeleted ? 0 : a.isDeleted ? 1 : -1));
 
-  const closeEditModal = () => setIsEditModalOpen(false);
-
-  const handleEditCountry = async (updatedCountry: Country) => {
-    try {
-      await axios.put(`${API_URL}/${updatedCountry.id}`, updatedCountry);
-      dispatch({
-        type: "SET_COUNTRIES",
-        payload: countryData.map((country) =>
-          country.id === updatedCountry.id ? updatedCountry : country
-        ),
-      });
-    } catch (error) {
-      console.error("Error updating country:", error);
-    }
-    closeEditModal();
-  };
   return (
     <section className={mainStyle["container"]}>
       <div className={style["country-card-header"]}>
@@ -197,7 +236,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
       <div className={style["country-card-row"]}>
         <Swiper
           spaceBetween={8}
-          slidesPerView={3}
+          slidesPerView={Math.min(3, sortedCountries.length)}
           pagination={{ clickable: true }}
           navigation={{
             prevEl: `.${style["swiper-button-prev"]}`,
@@ -231,15 +270,14 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
           <span>&#10148;</span>
         </div>
       </div>
-
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         onSubmit={handleAddCountry}
       />
-      {isEditModalOpen && editCountry && (
+      {isEditModalOpen && countryToEdit && (
         <EditModal
-          country={editCountry}
+          country={countryToEdit}
           onClose={closeEditModal}
           onSubmit={handleEditCountry}
         />

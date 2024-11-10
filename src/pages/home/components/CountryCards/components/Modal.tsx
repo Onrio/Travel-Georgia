@@ -12,7 +12,7 @@ interface ModalProps {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string
+    georgianAbout: string,
   ) => void;
 }
 
@@ -93,7 +93,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
       image as string,
       georgianName,
       georgianCapital,
-      georgianAbout
+      georgianAbout,
     );
     onClose();
   };

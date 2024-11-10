@@ -46,19 +46,21 @@ const Card: React.FC<CardProps> = ({
     e.preventDefault();
     handleDelete();
   };
-  const hendleEditbutton = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleEditButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
     handleEdit();
   };
+
   const countryName = String(
-    translate(`countries.${cardData.originalIndex}.name`) || cardData.name
+    translate(`countries.${cardData.originalIndex}.name`) || cardData.name,
   );
   const countryCapital = String(
-    translate(`countries.${cardData.originalIndex}.capital`) || cardData.capital
+    translate(`countries.${cardData.originalIndex}.capital`) ||
+      cardData.capital,
   );
   const countryAbout = String(
-    translate(`countries.${cardData.originalIndex}.about`) || cardData.about
+    translate(`countries.${cardData.originalIndex}.about`) || cardData.about,
   );
 
   return (
@@ -90,7 +92,7 @@ const Card: React.FC<CardProps> = ({
               </button>
               <button
                 className={style["delete-button"]}
-                onClick={hendleEditbutton}
+                onClick={handleEditButtonClick}
               >
                 {String(translate("country.edit"))}
               </button>

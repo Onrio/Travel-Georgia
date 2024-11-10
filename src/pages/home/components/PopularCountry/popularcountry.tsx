@@ -7,7 +7,7 @@ import { getTranslation, defaultLocale } from "@/dammyData";
 
 const MostLikedCountry: React.FC = () => {
   const mostLikedCountry = countryData.countries.reduce((prev, current) =>
-    current.like > prev.like ? current : prev
+    current.like > prev.like ? current : prev,
   );
 
   const { lang } = useParams<{ lang: string }>();

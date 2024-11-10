@@ -25,7 +25,7 @@
       "georgianCapital": "პარიზი"
     },
     {
-      "name": "Georgia",
+      "name": "Georgiaa",
       "population": 3.713,
       "capital": "Tbilisi",
       "about": "Georgia, the birthplace of wine, boasts an 8,000-year-old tradition with unique qvevri winemaking. Its rich culture blends ancient techniques, diverse grape varieties, and vibrant wine festivals.",
@@ -34,7 +34,9 @@
       "like": 90,
       "georgianAbout": "საქართველო, ღვინის სამშობლო, ამაყობს 8000 წლიანი ტრადიციით უნიკალური ქვევრის მეღვინეობით. მისი მდიდარი კულტურა აერთიანებს უძველეს ტექნიკას, მრავალფეროვანი ყურძნის ჯიშები და ძლიერი ღვინის ფესტივალები.",
       "georgianName": "საქართველო",
-      "georgianCapital": "თბილისი"
+      "georgianCapital": "თბილისი",
+      "isDeleted": false,
+      "originalIndex": 2
     }
   ]
 }

@@ -33,7 +33,7 @@ async function writeDatabase(data) {
   try {
     await fs.writeFile(
       databasePath,
-      JSON.stringify({ countries: data }, null, 2)
+      JSON.stringify({ countries: data }, null, 2),
     );
     console.log("Database updated successfully!");
   } catch (error) {
