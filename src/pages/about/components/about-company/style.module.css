@@ -20,7 +20,7 @@
 .about-us-img img {
   width: 100%;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 .about-us-text {
@@ -32,4 +32,4 @@
 .about-us-text h3 {
   font-size: 24px;
   margin-bottom: 8px;
-}/*# sourceMappingURL=style.module.css.map */
+} /*# sourceMappingURL=style.module.css.map */

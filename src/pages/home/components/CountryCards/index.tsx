@@ -12,11 +12,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useParams } from "react-router-dom";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getCountries,
   addCountry,
@@ -58,15 +54,19 @@ const countryReducer = (state: Country[], action: ActionType): Country[] => {
       ];
     case "DELETE_COUNTRY":
       return state.map((country) =>
-        country.id === action.payload ? { ...country, isDeleted: true } : country
+        country.id === action.payload
+          ? { ...country, isDeleted: true }
+          : country,
       );
     case "LIKE_COUNTRY":
       return state.map((country) =>
-        country.id === action.payload ? { ...country, like: country.like + 1 } : country
+        country.id === action.payload
+          ? { ...country, like: country.like + 1 }
+          : country,
       );
     case "SORT_BY_LIKES":
       return [...state].sort((a, b) =>
-        action.payload === "asc" ? a.like - b.like : b.like - a.like
+        action.payload === "asc" ? a.like - b.like : b.like - a.like,
       );
     default:
       return state;
@@ -106,12 +106,13 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     Error,
     { countryId: string; updatedCountry: Country }
   >({
-    mutationFn: ({ countryId, updatedCountry }) => editCountry(countryId, updatedCountry),
+    mutationFn: ({ countryId, updatedCountry }) =>
+      editCountry(countryId, updatedCountry),
     onSuccess: (updatedCountry: Country) => {
       dispatch({
         type: "SET_COUNTRIES",
         payload: countryData.map((country) =>
-          country.id === updatedCountry.id ? updatedCountry : country
+          country.id === updatedCountry.id ? updatedCountry : country,
         ),
       });
       queryClient.invalidateQueries({ queryKey: ["countries"] });
@@ -130,12 +131,16 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     },
   });
   const sortOrder = searchParams.get("sort") as "asc" | "desc" | null;
-  
-  const { data: countries, error, isLoading } = useQuery({
+
+  const {
+    data: countries,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["countries", sortOrder],
     queryFn: () => getCountries(sortOrder),
   });
-  
+
   useEffect(() => {
     if (countries) {
       dispatch({ type: "SET_COUNTRIES", payload: countries });
@@ -144,7 +149,8 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-  if (!Array.isArray(countries) || countries.length === 0) return <div>No countries data available</div>;
+  if (!Array.isArray(countries) || countries.length === 0)
+    return <div>No countries data available</div>;
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -163,7 +169,7 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     image: string,
     georgianName: string,
     georgianCapital: string,
-    georgianAbout: string
+    georgianAbout: string,
   ) => {
     const newCountry: Country = {
       name,
@@ -206,7 +212,9 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
     })
     .sort((a, b) => (a.isDeleted === b.isDeleted ? 0 : a.isDeleted ? 1 : -1));
 
-  const visibleCountries = sortedCountries.filter((country) => !country.isDeleted);
+  const visibleCountries = sortedCountries.filter(
+    (country) => !country.isDeleted,
+  );
 
   const handleLikeCountry = (countryId: string) => {
     likeCountryMutation.mutate(countryId);
@@ -243,7 +251,8 @@ const CountryCards: React.FC<{ lang?: string }> = () => {
                 cardData={{
                   ...country,
                   name: lang === "ka" ? country.georgianName : country.name,
-                  capital: lang === "ka" ? country.georgianCapital : country.capital,
+                  capital:
+                    lang === "ka" ? country.georgianCapital : country.capital,
                   about: lang === "ka" ? country.georgianAbout : country.about,
                 }}
                 handleLikeClick={() => handleLikeCountry(country.id)}

@@ -2,9 +2,13 @@ import { httpClient } from "../index";
 import { Country } from "@/pages/home/components/CountryCards/index";
 
 // Fetch all countries
-export const getCountries = async (sortOrder: "asc" | "desc" | null = null): Promise<Country[]> => {
+export const getCountries = async (
+  sortOrder: "asc" | "desc" | null = null,
+): Promise<Country[]> => {
   try {
-    const queryParam = sortOrder ? `?_sort=${sortOrder === "asc" ? "like" : "-like"}` : "";
+    const queryParam = sortOrder
+      ? `?_sort=${sortOrder === "asc" ? "like" : "-like"}`
+      : "";
     const response = await httpClient.get(`/${queryParam}`);
     return response.data;
   } catch (error) {

@@ -13,7 +13,11 @@ interface ArticleData {
 const CountryArticle = () => {
   const { id, lang } = useParams<{ id: string; lang: string }>();
 
-  const { data: country, error, isLoading } = useQuery<ArticleData | null, Error>({
+  const {
+    data: country,
+    error,
+    isLoading,
+  } = useQuery<ArticleData | null, Error>({
     queryKey: ["country", id, lang],
     queryFn: async () => {
       if (!id) throw new Error("Country ID is missing.");
@@ -29,7 +33,6 @@ const CountryArticle = () => {
       }
     },
   });
-
 
   if (error) {
     console.error("Error fetching country:", error);
