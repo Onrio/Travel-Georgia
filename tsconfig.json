@@ -4,7 +4,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./*"]
-    }
+    },
+    "typeRoots": ["node_modules/@types", "node_modules"],
+    "types": ["node", "react"],
   },
   "files": [],
   "references": [
