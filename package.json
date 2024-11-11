@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.59.20",
+    "@tanstack/react-virtual": "^3.10.9",
     "axios": "^1.7.7",
     "fs": "^0.0.1-security",
     "prettier": "^3.3.3",
@@ -24,8 +25,7 @@
     "react-dom": "^18.3.1",
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.26.2",
-    "swiper": "^11.1.14",
-    "@tanstack/react-virtual": "^<latest-version>"
+    "swiper": "^11.1.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
