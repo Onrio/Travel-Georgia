@@ -14,7 +14,7 @@
 .country-image img {
   width: 100%;
   -o-object-fit: cover;
-  object-fit: cover;
+     object-fit: cover;
 }
 
 .country-title {
@@ -35,4 +35,4 @@
 
 .info-title {
   font-weight: bold;
-} /*# sourceMappingURL=style.module.css.map */
+}/*# sourceMappingURL=style.module.css.map */

@@ -40,3 +40,11 @@
   font-weight: 600;
   margin-bottom: 12px;
 }
+.pagination-controls {
+  width: 800px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+  margin: 16px 0;
+}

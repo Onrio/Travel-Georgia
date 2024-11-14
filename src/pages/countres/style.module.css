@@ -36,11 +36,20 @@
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
-  object-fit: cover;
+     object-fit: cover;
 }
 
 .country-name {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 12px;
-} /*# sourceMappingURL=style.module.css.map */
+}
+
+.pagination-controls {
+  width: 800px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+  margin: 16px 0;
+}/*# sourceMappingURL=style.module.css.map */

@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useVirtualizer, VirtualItem } from "@tanstack/react-virtual";
+import { useVirtualizer} from "@tanstack/react-virtual";
 import { getAllCountries } from "@/api/all-country";
 import style from "./style.module.css";
 import mainStyle from "@/style/index.module.css";
@@ -17,7 +17,11 @@ export type Country = {
   georgianCapital: string;
   georgianAbout: string;
 };
+
 const CountryList: React.FC<{ lang?: string }> = ({ lang = "en" }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const {
     data,
     error,
@@ -27,36 +31,35 @@ const CountryList: React.FC<{ lang?: string }> = ({ lang = "en" }) => {
     hasNextPage,
   } = useInfiniteQuery<Country[], Error>({
     queryKey: ["allCountries"],
-    queryFn: ({ pageParam = 1 }) =>
-      getAllCountries({ pageParam: pageParam as number }),
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length > 0 ? allPages.length + 1 : undefined;
-    },
+    queryFn: ({ pageParam = 1 }) => getAllCountries({ pageParam: pageParam as number }),
+    getNextPageParam: (lastPage) => (lastPage.length > 0 ? currentPage + 1 : undefined),
     initialPageParam: 1,
   });
 
   const countries = data?.pages.flat() || [];
+  const totalPages = Math.ceil(countries.length / itemsPerPage);
+
   const parentRef = useRef(null);
 
   const rowVirtualizer = useVirtualizer({
-    count: countries.length + (hasNextPage ? 1 : 0),
+    count: itemsPerPage,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 500,
     overscan: 5,
   });
 
-  rowVirtualizer.getVirtualItems().forEach((virtualRow) => {
-    if (
-      virtualRow.index === countries.length - 1 &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
-    }
-  });
+  const virtualItems = rowVirtualizer.getVirtualItems();
+
+  if (virtualItems.some((item) => item.index === countries.length - 1) && hasNextPage && !isFetchingNextPage) {
+    fetchNextPage();
+  }
 
   if (isLoading) return <div>Loading countries...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const currentCountries = countries.slice(start, end);
 
   return (
     <section className={mainStyle["container"]}>
@@ -68,8 +71,8 @@ const CountryList: React.FC<{ lang?: string }> = ({ lang = "en" }) => {
             position: "relative",
           }}
         >
-          {rowVirtualizer.getVirtualItems().map((virtualRow: VirtualItem) => {
-            const country = countries[virtualRow.index];
+          {virtualItems.map((virtualRow) => {
+            const country = currentCountries[virtualRow.index];
             if (!country) {
               return (
                 <div
@@ -79,12 +82,11 @@ const CountryList: React.FC<{ lang?: string }> = ({ lang = "en" }) => {
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  {isFetchingNextPage
-                    ? "Loading more countries..."
-                    : "No more countries"}
+                  {isFetchingNextPage ? "Loading more countries..." : "No more countries"}
                 </div>
               );
             }
+
             return (
               <div
                 key={country.id}
@@ -116,6 +118,23 @@ const CountryList: React.FC<{ lang?: string }> = ({ lang = "en" }) => {
             );
           })}
         </div>
+      </div>
+      <div className={style["pagination-controls"]}>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
       {isFetchingNextPage && <div>Loading more countries...</div>}
     </section>
